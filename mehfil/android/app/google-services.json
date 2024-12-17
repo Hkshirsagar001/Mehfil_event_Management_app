@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "148012898013",
+    "project_id": "eventaura-3700e",
+    "storage_bucket": "eventaura-3700e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148012898013:android:7d1d179316c33518646d34",
+        "android_client_info": {
+          "package_name": "com.example.mehfil"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "148012898013-013528l5s0k743o974q3cdqc0ccgslus.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATGkCXfjJGOQzq3D_XzCwex331bUSuHf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "148012898013-013528l5s0k743o974q3cdqc0ccgslus.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
