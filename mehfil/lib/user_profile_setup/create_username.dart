@@ -97,7 +97,7 @@ Future<void> _saveDataToFirestore() async {
             LinearProgressBar(
               maxSteps: 3,
               currentStep: _currentPage + 1,
-              progressColor: Colors.pinkAccent,
+              progressColor:const Color(0xffF20587),
               backgroundColor: Colors.white24,
               minHeight: 7,
               borderRadius: BorderRadius.circular(10),
@@ -292,59 +292,6 @@ Future<void> _saveDataToFirestore() async {
                       ],
                     ),
 
-                  // Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     const SizedBox(height: 10),
-                  //     Text(
-                  //       "Choose your profile photo",
-                  //       style: GoogleFonts.raleway(
-                  //         fontSize: 28,
-                  //         fontWeight: FontWeight.w800,
-                  //         color: Colors.white,
-                  //       ),
-                  //     ),
-                  //     const SizedBox(height: 10),
-                  //     GestureDetector(
-                  //       onTap: _pickImage,
-                  //       child: Center(
-                  //         child: Stack(
-                  //           children: [
-                  //             Container(
-                  //               width: 200,
-                  //               height: 200,
-                  //               decoration: BoxDecoration(
-                  //                 border: Border.all(
-                  //                   color: const Color(0xffF20587),
-                  //                   width: 4,
-                  //                 ),
-                  //                 borderRadius: BorderRadius.circular(14),
-                  //               ),
-                  //               child: _selectedImage != null
-                  //                   ? ClipRRect(
-                  //                       borderRadius: BorderRadius.circular(14),
-                  //                       child: Image.file(
-                  //                         _selectedImage!,
-                  //                         fit: BoxFit.cover,
-                  //                       ),
-                  //                     )
-                  //                   : const Icon(
-                  //                       Icons.add_a_photo,
-                  //                       color: Colors.white38,
-                  //                       size: 100,
-                  //                     ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     const Spacer(),
-                  //     _buildNextButton(),
-                  //   ],
-                  // ),
-                 
-                 
-                 
                   // Page 3: Categories
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,7 +356,7 @@ Future<void> _saveDataToFirestore() async {
         },
         child: Chip(
           backgroundColor: selectedCategories.contains(category)
-              ? Colors.pinkAccent
+              ? const Color(0xffF20587)
               : Colors.grey[800],
           label: Text(
             category,
@@ -458,9 +405,15 @@ Future<void> _saveDataToFirestore() async {
     return Container(
       height: 60,
       decoration: BoxDecoration(
-        color: Colors.pinkAccent,
-        borderRadius: BorderRadius.circular(14),
-      ),
+            borderRadius: BorderRadius.circular(14),
+            gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xffF20587),
+                  Color(0xffF2059F),
+                  Color(0xffF207CB)
+                ])),
       child: const Center(
         child: Text(
           "Finish",
