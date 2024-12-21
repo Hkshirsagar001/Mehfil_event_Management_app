@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mehfil/organizer_profile_setup/dasboard_menu.dart';
+import 'package:mehfil/organizer_profile_setup/org_menu.dart';
 
 class OrganizerProfilePage extends StatefulWidget {
   const OrganizerProfilePage({super.key});
@@ -91,7 +91,7 @@ Future<void> _submitProfileData() async {
     // Navigate to Dashboard screen and pass uid
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DashMenu(uid: user.uid)),
+      MaterialPageRoute(builder: (context) => MyMenu(uid: user.uid)),
     );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(

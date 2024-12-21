@@ -74,7 +74,7 @@ Future<void> _saveDataToFirestore() async {
     // Navigate to HomeScreen after saving the profile
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
+        builder: (context) =>  HomeScreen(user: user!),
       ),
     );
   } catch (e) {

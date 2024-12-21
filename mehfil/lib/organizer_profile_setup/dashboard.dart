@@ -81,23 +81,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // Function to sign out and navigate to the login screen
-  Future<void> _signOutAndNavigate() async {
-    try {
-      // Sign out the user from Firebase
-      await FirebaseAuth.instance.signOut();
-      
-      // Navigate to the Login Screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),  // Replace with your LoginScreen
-      );
-    } catch (e) {
-      log('Error signing out: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out: $e')),
-      );
-    }
+ Future<void> _signOutAndNavigate() async {
+  try {
+    // Sign out the user from Firebase
+    await FirebaseAuth.instance.signOut();
+    
+    // Clear the navigation stack and show the Login screen
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false, // Remove all previous routes
+    );
+  } catch (e) {
+    log('Error signing out: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error signing out: $e')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {

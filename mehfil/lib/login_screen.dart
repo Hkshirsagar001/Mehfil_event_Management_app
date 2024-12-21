@@ -4,14 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mehfil/organizer_profile_setup/org_menu.dart';
 
 import 'package:mehfil/organizer_profile_setup/organizer_profile.dart';
 
 import 'package:mehfil/singup_screen.dart';
-import 'package:mehfil/home_screen.dart';
+import 'package:mehfil/user_menu.dart';
 import 'package:mehfil/user_profile_setup/create_username.dart';
-
-import 'organizer_profile_setup/dasboard_menu.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false; // Added for showing CircularProgressIndicator
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -60,6 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Email/Password Login
   Future<void> _login() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
     try {
       final UserCredential userCredential =
           await _auth.signInWithEmailAndPassword(
@@ -92,40 +96,47 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
     }
   }
 
   // Navigate based on user role and newLogin
-  void _navigateBasedOnRole(DocumentSnapshot userDoc, String uid) {
-    if (userDoc.exists) {
-      var userData = userDoc.data() as Map<String, dynamic>;
-      String role = userData['role'] ?? '';
-      bool newLogin = userData['newLogin'] ?? false;
+ void _navigateBasedOnRole(DocumentSnapshot userDoc, String uid) {
+  if (userDoc.exists) {
+    var userData = userDoc.data() as Map<String, dynamic>;
+    String role = userData['role'] ?? '';
+    bool newLogin = userData['newLogin'] ?? false;
 
-      if (role == 'Organizer' && newLogin) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const OrganizerProfilePage()),
-        );
-      } else if (role == 'Attendee' && newLogin) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const CreateUsername()),
-        );
-      } else if (role == 'Organizer' && !newLogin) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => DashMenu(uid: uid)),
-        );
-      } else if (role == 'Attendee' && !newLogin) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
-    } else {
-      log('User data not found');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: User data not found.')),
+    if (role == 'Organizer' && newLogin) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const OrganizerProfilePage()),
+      );
+    } else if (role == 'Attendee' && newLogin) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const CreateUsername()),
+      );
+    } else if (role == 'Organizer' && !newLogin) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => MyMenu(uid: uid)),
+      );
+    } else if (role == 'Attendee' && !newLogin) {
+      // Pass the logged-in user object to MenuScreen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => MenuScreen(user: _auth.currentUser!),
+        ),
       );
     }
+  } else {
+    log('User data not found');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Error: User data not found.')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -176,8 +187,14 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: _login,
-              child: _buildGradientButton("Login"),
+              onTap: _isLoading ? null : _login, // Disable button during loading
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : _buildGradientButton("Login"),
             ),
             const SizedBox(height: 10),
             _buildDividerWithText("OR"),
@@ -238,7 +255,12 @@ class _LoginScreenState extends State<LoginScreen> {
           hintStyle: GoogleFonts.raleway(color: Colors.white38),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset(iconPath,color:const Color(0xffF20587) , width: 10, height: 10),
+            child: Image.asset(
+              iconPath,
+              color: const Color(0xffF20587),
+              width: 10,
+              height: 10,
+            ),
           ),
           suffixIcon: isPassword
               ? GestureDetector(

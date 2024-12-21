@@ -1,11 +1,13 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mehfil/search_result.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+   final User user;
 
+  const HomeScreen({super.key, required this.user});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -14,38 +16,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-    // Adding listener to the FocusNode
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        _navigateToAnotherScreen();
-      }
-    });
+  
 
-    // Adding listener to the TextEditingController
-    _controller.addListener(() {
-      if (_controller.text.isNotEmpty) {
-        _navigateToAnotherScreen();
-      }
-    });
-  }
 
-  void _navigateToAnotherScreen() {
-    // Add your navigation logic here
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SearchResultsScreen()),
-    );
-  }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -186,10 +161,11 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: _controller,
           focusNode: _focusNode,
           decoration: InputDecoration(
-            prefixIcon: const Icon(
-              Icons.search,
-              size: 40,
-            ),
+            prefixIcon:IconButton(
+              onPressed:() {
+                Navigator.of(context).push(MaterialPageRoute(builder:(context) => const SearchResultsScreen(),));
+              }, 
+              icon:const  Icon(Icons.search, size: 40,)),
             hintText: "Search",
             hintStyle: GoogleFonts.raleway(
               color: Colors.white38,
@@ -289,8 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Card(
                       color: Colors.white10,
-                      // margin:
-                      //     const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                     
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Row(

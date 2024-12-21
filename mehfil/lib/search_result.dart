@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mehfil/event_detail.dart';
 
@@ -9,185 +11,166 @@ class SearchResultsScreen extends StatefulWidget {
 }
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
-  final List<Map<String, String>> events = [
-    {
-      "title": "Satellite mega festival - 2022",
-      "date": "THU 26 May, 09:00",
-      "image": "assets/home/axville-5WrxWltrCTg-unsplash.jpg",
-    },
-    {
-      "title": "Dance party at the top of the town - 2022",
-      "date": "THU 26 May, 09:00",
-      "image": "assets/home/joao-cruz-IkEpl3JkVqU-unsplash.jpg",
-    },
-    {
-      "title": "Party with friends at night - 2022",
-      "date": "THU 26 May, 09:00",
-      "image": "assets/home/vishnu-r-nair-m1WZS5ye404-unsplash.jpg",
-    },
-   
-  ];
+  List<Map<String, dynamic>> allEvents = [];
+  List<Map<String, dynamic>> filteredEvents = [];
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchEvents(); // Fetch events from Firestore
+    searchController.addListener(() {
+      filterEvents(searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void fetchEvents() async {
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('events').get();
+
+      final fetchedEvents = snapshot.docs
+          .map((doc) => {
+                ...doc.data() as Map<String, dynamic>,
+                'id': doc.id,
+              })
+          .where((event) => event['eventName'] != null)
+          .toList();
+
+      setState(() {
+        allEvents = fetchedEvents;
+        filteredEvents = fetchedEvents;
+      });
+    } catch (error) {
+      debugPrint('Error fetching events: $error');
+    }
+  }
+
+  void filterEvents(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredEvents = allEvents;
+      });
+    } else {
+      setState(() {
+        filteredEvents = allEvents
+            .where((event) =>
+                event['eventName']
+                    ?.toLowerCase()
+                    .contains(query.toLowerCase()) ??
+                false)
+            .toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff26141C),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text("Search Results"),
-        centerTitle: true,
+        backgroundColor: const Color(0xff26141C),
+        title: const Text('Search Events'),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16.0),
+            child: Icon(Icons.search, color: Colors.white),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search Bar and Location Button
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xff26141C),
-                      hintText: "Search",
-                      hintStyle: const TextStyle(color: Colors.white54),
-                      prefixIcon: const Icon(Icons.search, color: Colors.white54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:const BorderSide(
-                          color: Colors.white38
-                        ),
-                      ),
-                    ),
-                  ),
+      backgroundColor: const Color(0xff26141C),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: searchController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white10,
+                hintText: 'Search events...',
+                hintStyle: const TextStyle(color: Colors.white54),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none,
                 ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 61, 1, 28),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.filter_list, color: Colors.white54),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Location Button
-            GestureDetector(
-              onTap: () {
-                // Handle location tap
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 70, 8, 36),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.location_on, color: Colors.pink),
-                    SizedBox(width: 8),
-                    Text(
-                      "My Current Location",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                prefixIcon: const Icon(Icons.search, color: Colors.white54),
               ),
             ),
-            const SizedBox(height: 16),
-            // Event List
-            Expanded(
-              child: ListView.builder(
-                itemCount: events.length,
-                itemBuilder: (context, index) {
-                  final event = events[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const EventDetailsScreen(),
+          ),
+          Expanded(
+            child: filteredEvents.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No events found',
+                      style: TextStyle(color: Colors.white54),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredEvents.length,
+                    itemBuilder: (context, index) {
+                      final event = filteredEvents[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to EventDetailsScreen with event data
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EventDetailsScreen(event: event),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          color: const Color(0xff1F1A24),
+                          child: ListTile(
+                            leading: event['eventImage'] != null &&
+                                    event['eventImage'] != ''
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 60,
+                                        maxHeight: 60,
+                                      ),
+                                      child: Image.file(
+                                        File(event['eventImage']!),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.image,
+                                    color: Colors.white54,
+                                    size: 40,
+                                  ),
+                            title: Text(
+                              event['eventName'] ?? 'No Event Name',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            subtitle: Text(
+                              event['venueName'] ?? 'No Venue',
+                              style: const TextStyle(color: Colors.white54),
+                            ),
+                            trailing: Text(
+                              event['ticketPrice'] != null
+                                  ? '\$${event['ticketPrice']}'
+                                  : 'Free',
+                              style: const TextStyle(color: Colors.pink),
+                            ),
+                          ),
                         ),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color:  const Color(0xff26141C),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white38)
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              // Event Image
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  bottomLeft: Radius.circular(16),
-                                ),
-                                child: Image.asset(
-                                  event['image']!,
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              // Event Info
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      event['title']!,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      event['date']!,
-                                      style: const TextStyle(
-                                        color: Colors.white54,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.favorite_border,
-                                  color: Colors.white54),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                  ),
+          ),
+        ],
       ),
     );
   }

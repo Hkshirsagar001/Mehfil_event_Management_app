@@ -1,11 +1,11 @@
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mehfil/organizer_profile_setup/full_screen_map.dart';
 
 class EventCreationScreen extends StatefulWidget {
   const EventCreationScreen({super.key});
@@ -22,7 +22,6 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   final TextEditingController _eventDescriptionController =
       TextEditingController();
   final TextEditingController _venueNameController = TextEditingController();
-  final TextEditingController _venueAddressController = TextEditingController();
   final TextEditingController _ticketPriceController = TextEditingController();
   final TextEditingController _ticketLimitController = TextEditingController();
 
@@ -41,85 +40,148 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Google Maps controller and marker
+  GoogleMapController? _mapController;
+  LatLng? _venueLocation;
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          color: Colors.white.withOpacity(0.2),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTextField(
-                    controller: _eventNameController,
-                    label: 'Event Name',
-                    validator: 'Please enter the event name',
-                  ),
-                  _buildDropdownField(
-                    label: 'Event Category',
-                    value: _eventCategory,
-                    items: categories,
-                    onChanged: (value) {
-                      setState(() {
-                        _eventCategory = value;
-                      });
-                    },
-                  ),
-                  _buildTextField(
-                    controller: _eventDescriptionController,
-                    label: 'Event Description',
-                    validator: 'Please enter a description',
-                    maxLines: 3,
-                  ),
-                  _buildDropdownField(
-                    label: 'Event Type',
-                    value: _eventType,
-                    items: ['In-person', 'Virtual', 'Hybrid'],
-                    onChanged: (value) {
-                      setState(() {
-                        _eventType = value;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 5),
-                  _buildDatePickerField(
-                    label: 'Event Date',
-                    date: _startDate,
-                    onTap: () async {
-                      await _selectStartDate();
-                    },
-                  ),
-                  _buildTextField(
-                    controller: _venueNameController,
-                    label: 'Venue Name',
-                    validator: 'Please enter the venue name',
-                  ),
-                  _buildTextField(
-                    controller: _venueAddressController,
-                    label: 'Venue Address',
-                    validator: 'Please enter the venue address',
-                  ),
-                  _buildImagePicker(),
-                  _buildTextField(
-                    controller: _ticketPriceController,
-                    label: 'Ticket Price',
-                    keyboardType: TextInputType.number,
-                    validator: 'Please enter a ticket price',
-                  ),
-                  _buildTextField(
-                    controller: _ticketLimitController,
-                    label: 'Number of Tickets',
-                    keyboardType: TextInputType.number,
-                    validator: 'Please enter the ticket limit',
-                  ),
-                  const SizedBox(height: 20),
-                  _buildSubmitButton(),
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Event'),
+        backgroundColor: const Color(0xffF20587),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            color: Colors.white.withOpacity(0.2),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTextField(
+                      controller: _eventNameController,
+                      label: 'Event Name',
+                      validator: 'Please enter the event name',
+                    ),
+                    _buildDropdownField(
+                      label: 'Event Category',
+                      value: _eventCategory,
+                      items: categories,
+                      onChanged: (value) {
+                        setState(() {
+                          _eventCategory = value;
+                        });
+                      },
+                    ),
+                    _buildTextField(
+                      controller: _eventDescriptionController,
+                      label: 'Event Description',
+                      validator: 'Please enter a description',
+                      maxLines: 3,
+                    ),
+                    _buildDropdownField(
+                      label: 'Event Type',
+                      value: _eventType,
+                      items: ['In-person', 'Virtual', 'Hybrid'],
+                      onChanged: (value) {
+                        setState(() {
+                          _eventType = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 5),
+                    _buildDatePickerField(
+                      label: 'Event Date',
+                      date: _startDate,
+                      onTap: () async {
+                        await _selectStartDate();
+                      },
+                    ),
+                    _buildTextField(
+                      controller: _venueNameController,
+                      label: 'Venue Name',
+                      validator: 'Please enter the venue name',
+                    ),
+                    const SizedBox(height: 10),
+                    // Map for selecting location
+                    _venueLocation == null
+                        ? const Text(
+                            "Tap on the map to select a venue location")
+                        : Container(),
+                    SizedBox(
+                      height: 250,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: _venueLocation ??
+                              const LatLng(
+                                  18.5204, 73.8567), // Pune coordinates
+                          zoom: 14,
+                        ),
+                        onMapCreated: (controller) {
+                          _mapController = controller;
+                        },
+                        onTap: _onMapTapped,
+                        markers: _venueLocation != null
+                            ? {
+                                Marker(
+                                  markerId: const MarkerId('venue'),
+                                  position: _venueLocation!,
+                                  infoWindow:
+                                      const InfoWindow(title: 'Venue Location'),
+                                ),
+                              }
+                            : {},
+                      ),
+                    ),
+                    // Button to open map in full screen
+                    TextButton.icon(
+                      onPressed: () async {
+                        final selectedLocation = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FullScreenMapScreen(
+                              initialLocation: _venueLocation,
+                              onLocationSelected: _onMapTapped,
+                            ),
+                          ),
+                        );
+                        // Update the map with the location selected in full screen map
+                        if (selectedLocation != null) {
+                          setState(() {
+                            _venueLocation = selectedLocation;
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.fullscreen,
+                          color: Color(0xffF20587)),
+                      label: const Text(
+                        'Open Full Screen Map',
+                        style: TextStyle(color: Color(0xffF20587)),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildImagePicker(),
+                    _buildTextField(
+                      controller: _ticketPriceController,
+                      label: 'Ticket Price',
+                      keyboardType: TextInputType.number,
+                      validator: 'Please enter a ticket price',
+                    ),
+                    _buildTextField(
+                      controller: _ticketLimitController,
+                      label: 'Number of Tickets',
+                      keyboardType: TextInputType.number,
+                      validator: 'Please enter the ticket limit',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildSubmitButton(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -135,27 +197,15 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
     String? validator,
     int? maxLines,
     TextInputType? keyboardType,
+    Function(String)? onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        style: GoogleFonts.raleway(color: Colors.white),
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.raleway(color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.grey),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.grey, width: 1.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Color(0xffF20587), width: 2.0),
-          ),
+          border: const OutlineInputBorder(),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -165,6 +215,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
         },
         maxLines: maxLines,
         keyboardType: keyboardType,
+        onChanged: onChanged,
       ),
     );
   }
@@ -183,32 +234,106 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
         items: items.map((String category) {
           return DropdownMenuItem<String>(
             value: category,
-            child: Text(
-              category,
-              style: GoogleFonts.raleway(
-                  color: const Color(0xffF20587), fontWeight: FontWeight.w500),
-            ),
+            child: Text(category),
           );
         }).toList(),
         onChanged: onChanged,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.raleway(color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.grey),
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  // Image Picker button
+  Widget _buildImagePicker() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextButton.icon(
+        onPressed: _pickEventImage,
+        icon: const Icon(Icons.upload_file, color: Color(0xffF20587)),
+        label: const Text(
+          'Choose Image',
+          style: TextStyle(color: Color(0xffF20587)),
+        ),
+      ),
+    );
+  }
+
+  // Handle image picking
+  Future<void> _pickEventImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 500,
+    );
+    setState(() {
+      _eventImage = pickedFile;
+    });
+  }
+
+  // Submit button
+  Widget _buildSubmitButton() {
+    return GestureDetector(
+      onTap: () {
+        if (_formKey.currentState?.validate() ?? false) {
+          _submitEvent();
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: const LinearGradient(
+            colors: [Color(0xffF20587), Color(0xffF2059F), Color(0xffF207CB)],
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.grey, width: 1.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Color(0xffF20587), width: 2.0),
+        ),
+        child: const Center(
+          child: Text(
+            "Create Event",
+            style: TextStyle(color: Colors.white, fontSize: 20),
           ),
         ),
       ),
     );
+  }
+
+  // Submit event logic
+  Future<void> _submitEvent() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to create an event.')),
+      );
+      return;
+    }
+
+    String? imagePath = _eventImage?.path;
+
+    await _firestore.collection('events').add({
+      'eventName': _eventNameController.text,
+      'eventDescription': _eventDescriptionController.text,
+      'venueName': _venueNameController.text,
+      'ticketPrice': _ticketPriceController.text,
+      'ticketLimit': _ticketLimitController.text,
+      'startDate': _startDate,
+      'eventCategory': _eventCategory,
+      'eventType': _eventType,
+      'eventImage': imagePath,
+      'OrganizerId': user.uid,
+      'venueLocation': GeoPoint(
+        _venueLocation?.latitude ?? 0.0,
+        _venueLocation?.longitude ?? 0.0,
+      ),
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Event created successfully!')),
+    );
+
+    Navigator.pop(context);
   }
 
   // Date picker field builder
@@ -235,7 +360,8 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(color: Color(0xffF20587), width: 2.0),
+              borderSide:
+                  const BorderSide(color: Color(0xffF20587), width: 2.0),
             ),
           ),
         ),
@@ -243,128 +369,11 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
     );
   }
 
-  // Image Picker button
-  Widget _buildImagePicker() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              'Upload Event Image',
-              style: GoogleFonts.raleway(
-                  color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                ),
-                child: TextButton.icon(
-                  onPressed: _pickEventImage,
-                  icon: const Icon(
-                    Icons.upload_file,
-                    color: Color(0xffF20587),
-                  ),
-                  label: Text(
-                    'Choose Image',
-                    style: GoogleFonts.raleway(
-                        color: const Color(0xffF20587),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Handle image picking
-  Future<void> _pickEventImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 500,
-    );
+  // Handle map tap
+  void _onMapTapped(LatLng location) {
     setState(() {
-      _eventImage = pickedFile;
+      _venueLocation = location;
     });
-  }
-
-  // Submit button
-  Widget _buildSubmitButton() {
-    return GestureDetector(
-      onTap: () {
-         if (_formKey.currentState?.validate() ?? false) {
-          _submitEvent();
-        }
-      },
-      child: Container(
-          width: double.infinity,
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            gradient: const LinearGradient(
-              colors: [Color(0xffF20587), Color(0xffF2059F), Color(0xffF207CB)],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              "Create Event",
-              style: GoogleFonts.raleway(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-    );
-    
-  }
-
-  // Submit event logic
-  Future<void> _submitEvent() async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      // If user is not authenticated, show a message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please log in to create an event.')),
-      );
-      return;
-    }
-
-    String? imagePath = _eventImage?.path;
-
-    // Store event data in Firestore
-    await _firestore.collection('events').add({
-      'eventName': _eventNameController.text,
-      'eventDescription': _eventDescriptionController.text,
-      'venueName': _venueNameController.text,
-      'venueAddress': _venueAddressController.text,
-      'ticketPrice': _ticketPriceController.text,
-      'ticketLimit': _ticketLimitController.text,
-      'startDate': _startDate,
-      'eventCategory': _eventCategory,
-      'eventType': _eventType,
-      'eventImage': imagePath,  // Store local image path
-      'OrganizerId': user.uid,  // Store UID of the user who created the event
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Event created successfully!')),
-    );
-
-    // Optionally, navigate back or clear form
-    Navigator.pop(context);
   }
 
   // Select start date
