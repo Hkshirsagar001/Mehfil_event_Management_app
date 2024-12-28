@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mehfil/home_screen.dart';
 
+import '../user_menu.dart';
+
 class CreateUsername extends StatefulWidget {
   const CreateUsername({super.key});
 
@@ -52,31 +54,39 @@ Future<void> _saveDataToFirestore() async {
   }
 
   try {
-    // Save profile data to Firestore
-    await FirebaseFirestore.instance.collection('attendee_profiles').add({
+    // Get the current user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User is not logged in.");
+    }
+
+    final String uid = user.uid;
+
+    // Save profile data to Firestore with the document ID as the UID
+    await FirebaseFirestore.instance
+        .collection('attendee_profiles')
+        .doc(uid)
+        .set({
       'username': username,
       'imagePath': imagePath, // Storing the local image path
       'categories': categories,
       'createdAt': Timestamp.now(),
     });
 
-    log('Profile successfully stored in Firestore');
+    log('Profile successfully stored in Firestore with UID: $uid');
 
-    // After profile is saved, update the 'newLogin' flag in the 'users' collection
-    final user = FirebaseAuth.instance.currentUser; // Get the current user
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'newLogin': false, // Set 'newLogin' flag to false
-      });
-      log('newLogin flag updated to false');
-    }
+    // Update the 'newLogin' flag in the 'users' collection
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'newLogin': false, // Set 'newLogin' flag to false
+    });
+    log('newLogin flag updated to false');
 
     // Navigate to HomeScreen after saving the profile
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) =>  HomeScreen(user: user!),
-      ),
-    );
+   Navigator.of(context).pushReplacement(
+  MaterialPageRoute(
+    builder: (context) => MenuScreen(user: user),
+  ),
+);
   } catch (e) {
     log('Error storing profile: $e');
     ScaffoldMessenger.of(context).showSnackBar(
@@ -85,6 +95,7 @@ Future<void> _saveDataToFirestore() async {
   }
 }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

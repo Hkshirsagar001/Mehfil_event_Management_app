@@ -150,7 +150,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       width: 10,
                       height: 10,
                       color: const Color(0xffF20587),
-                    ),
+                    ), 
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),

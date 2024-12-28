@@ -1,11 +1,10 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mehfil/search_result.dart';
 
 class HomeScreen extends StatefulWidget {
-   final User user;
+  final User user;
 
   const HomeScreen({super.key, required this.user});
   @override
@@ -15,12 +14,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
-  
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,54 +50,54 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     final List<Map<String, String>> popularNow = [
-    {
-      'title': 'Going to a Rock Concert',
-      'date': 'THU 26 May, 09.00 - FRI 27 May, 10:00',
-      'price': '\$30.00',
-      'image': 'assets/home/matty-adame-nLUb9GThIcg-unsplash.jpg',
-    },
-    {
-      'title': 'Art Workshop',
-      'date': 'SAT 28 May, 14:00 - SAT 28 May, 17:00',
-      'price': '\$20.00',
-      'image': 'assets/home/vishnu-r-nair-m1WZS5ye404-unsplash.jpg',
-    },
-    {
-      'title': 'Food Festival',
-      'date': 'SUN 29 May, 12:00 - SUN 29 May, 18:00',
-      'price': '\$15.00',
-      'image': 'assets/home/samantha-gades-fIHozNWfcvs-unsplash.jpg',
-    },
-  ];
+      {
+        'title': 'Going to a Rock Concert',
+        'date': 'THU 26 May, 09.00 - FRI 27 May, 10:00',
+        'price': '\$30.00',
+        'image': 'assets/home/matty-adame-nLUb9GThIcg-unsplash.jpg',
+      },
+      {
+        'title': 'Art Workshop',
+        'date': 'SAT 28 May, 14:00 - SAT 28 May, 17:00',
+        'price': '\$20.00',
+        'image': 'assets/home/vishnu-r-nair-m1WZS5ye404-unsplash.jpg',
+      },
+      {
+        'title': 'Food Festival',
+        'date': 'SUN 29 May, 12:00 - SUN 29 May, 18:00',
+        'price': '\$15.00',
+        'image': 'assets/home/samantha-gades-fIHozNWfcvs-unsplash.jpg',
+      },
+    ];
     final List<Map<String, String>> recommendations = [
-    {
-      'title': 'Dance party at the top of the town - 2022',
-      'location': 'New York',
-      'price': '\$30.00',
-      'image': 'assets/home/axville-5WrxWltrCTg-unsplash.jpg',
-    },
-    {
-      'title': 'Festival event at kudasan - 2022',
-      'location': 'California',
-      'price': 'Free',
-      'image': 'assets/home/jason-leung-Xaanw0s0pMk-unsplash.jpg',
-    },
-    {
-      'title': 'Party with friends at night - 2022',
-      'location': 'Miami',
-      'price': 'Free',
-      'image': 'assets/home/matty-adame-nLUb9GThIcg-unsplash.jpg',
-    },
-    {
-      'title': 'Satellite mega festival - 2022',
-      'location': 'California',
-      'price': '\$30.00',
-      'image': 'assets/home/axville-5WrxWltrCTg-unsplash.jpg',
-    },
-  ];
+      {
+        'title': 'Dance party at the top of the town - 2022',
+        'location': 'New York',
+        'price': '\$30.00',
+        'image': 'assets/home/axville-5WrxWltrCTg-unsplash.jpg',
+      },
+      {
+        'title': 'Festival event at kudasan - 2022',
+        'location': 'California',
+        'price': 'Free',
+        'image': 'assets/home/jason-leung-Xaanw0s0pMk-unsplash.jpg',
+      },
+      {
+        'title': 'Party with friends at night - 2022',
+        'location': 'Miami',
+        'price': 'Free',
+        'image': 'assets/home/matty-adame-nLUb9GThIcg-unsplash.jpg',
+      },
+      {
+        'title': 'Satellite mega festival - 2022',
+        'location': 'California',
+        'price': '\$30.00',
+        'image': 'assets/home/axville-5WrxWltrCTg-unsplash.jpg',
+      },
+    ];
 
     return Scaffold(
-       backgroundColor: const Color(0xff26141C),
+      backgroundColor: const Color(0xff26141C),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
@@ -127,7 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(height: 4,),
+                        const SizedBox(
+                          height: 4,
+                        ),
                         Row(
                           children: [
                             Image.asset(
@@ -152,42 +147,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 50,
                     height: 50,
                     color: Colors.white10,
-                    child: const Icon(Icons.notification_important,color: Colors.white70,),
+                    child: const Icon(
+                      Icons.notification_important,
+                      color: Colors.white70,
+                    ),
                   )
                 ],
               ),
               const SizedBox(height: 16),
               TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          decoration: InputDecoration(
-            prefixIcon:IconButton(
-              onPressed:() {
-                Navigator.of(context).push(MaterialPageRoute(builder:(context) => const SearchResultsScreen(),));
-              }, 
-              icon:const  Icon(Icons.search, size: 40,)),
-            hintText: "Search",
-            hintStyle: GoogleFonts.raleway(
-              color: Colors.white38,
-              fontSize: 18,
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(14)),
-              borderSide: BorderSide(
-                style: BorderStyle.solid,
-                color: Color(0xffF20587),
+                controller: _controller,
+                focusNode: _focusNode,
+                decoration: InputDecoration(
+                  prefixIcon: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SearchResultsScreen(user: widget.user),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.search, size: 40),
+                  ),
+                  hintText: "Search",
+                  hintStyle: GoogleFonts.raleway(
+                    color: Colors.white38,
+                    fontSize: 18,
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(
+                      style: BorderStyle.solid,
+                      color: Color(0xffF20587),
+                    ),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(
+                      style: BorderStyle.solid,
+                      color: Colors.white38,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(14)),
-              borderSide: BorderSide(
-                style: BorderStyle.solid,
-                color: Colors.white38,
-              ),
-            ),
-          ),
-        ),
-              
+
               const SizedBox(height: 15),
               SizedBox(
                 height: 60, // Constrain height for ListView
@@ -230,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-         const SizedBox(height: 15),
+              const SizedBox(height: 15),
               //upcoming Events
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -265,7 +269,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Card(
                       color: Colors.white10,
-                     
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Row(
@@ -325,7 +328,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           width: 90,
                                           height: 40,
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(14),
+                                            borderRadius:
+                                                BorderRadius.circular(14),
                                             gradient: const LinearGradient(
                                               begin: Alignment.topCenter,
                                               end: Alignment.bottomCenter,
@@ -360,8 +364,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
-        
-         const SizedBox(height: 15),
+
+              const SizedBox(height: 15),
               //popular now
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -387,122 +391,126 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20,), 
-          SizedBox(
-            height: 220, // Total height for the cards
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: popularNow.length,
-              itemBuilder: (BuildContext context, int index) {
-                final event = popularNow[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Container(
-                    width: 300,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 5,
-                          offset: const Offset(2, 2),
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // Top Image Container
-                        Container(
-                          width: 300,
-                          height: 100,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(14),
-                              topRight: Radius.circular(14),
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(14),
-                              topRight: Radius.circular(14),
-                            ),
-                            child: Image.asset(
-                              event['image']!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                height: 220, // Total height for the cards
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: popularNow.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final event = popularNow[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Container(
+                        width: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 5,
+                              offset: const Offset(2, 2),
+                            )
+                          ],
                         ),
-                        // Bottom Details Container
-                        Container(
-                          width: 300,
-                          height: 100,
-                          decoration: const BoxDecoration(
-                            color: Colors.white10,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(14),
-                              bottomRight: Radius.circular(14),
+                        child: Column(
+                          children: [
+                            // Top Image Container
+                            Container(
+                              width: 300,
+                              height: 100,
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(14),
+                                  topRight: Radius.circular(14),
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(14),
+                                  topRight: Radius.circular(14),
+                                ),
+                                child: Image.asset(
+                                  event['image']!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  event['title']!,
-                                  style: GoogleFonts.raleway(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                            // Bottom Details Container
+                            Container(
+                              width: 300,
+                              height: 100,
+                              decoration: const BoxDecoration(
+                                color: Colors.white10,
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(14),
+                                  bottomRight: Radius.circular(14),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  event['date']!,
-                                  style: GoogleFonts.raleway(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Row(
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Spacer(),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(14),
-                                        color: Colors.pink.withOpacity(0.1),
+                                    Text(
+                                      event['title']!,
+                                      style: GoogleFonts.raleway(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
                                       ),
-                                      child: Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: Text(
-                                            event['price']!,
-                                            style: GoogleFonts.raleway(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.pink,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      event['date']!,
+                                      style: GoogleFonts.raleway(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Row(
+                                      children: [
+                                        const Spacer(),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                            color: Colors.pink.withOpacity(0.1),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              child: Text(
+                                                event['price']!,
+                                                style: GoogleFonts.raleway(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.pink,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
+                                      ],
+                                    )
                                   ],
-                                )
-                              ],
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-           const SizedBox(height: 15),
-           Padding(
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 15),
+              Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
@@ -526,103 +534,104 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-        
-          ListView.builder(
-            shrinkWrap: true,
-                  itemCount: recommendations.length,
-                  itemBuilder: (context, index) {
-                    final item = recommendations[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                           color:  Colors.white10, // Card background color
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Row(
-                          children: [
-                            // Image Section
-                            ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(14),
-                                bottomLeft: Radius.circular(14),
-                              ),
-                              child: Image.asset(
-                                item['image']!,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
+
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: recommendations.length,
+                itemBuilder: (context, index) {
+                  final item = recommendations[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white10, // Card background color
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          // Image Section
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(14),
+                              bottomLeft: Radius.circular(14),
                             ),
-                            // Details Section
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['title']!,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.raleway(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                            child: Image.asset(
+                              item['image']!,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          // Details Section
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item['title']!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.raleway(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.location_on,
-                                          size: 16,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on,
+                                        size: 16,
+                                        color: Colors.white54,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        item['location']!,
+                                        style: GoogleFonts.raleway(
+                                          fontSize: 12,
                                           color: Colors.white54,
                                         ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          item['location']!,
-                                          style: GoogleFonts.raleway(
-                                            fontSize: 12,
-                                            color: Colors.white54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            // Price Section
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFF007F).withOpacity(0.1), // Light pink background
-                                  borderRadius: BorderRadius.circular(8),
+                          ),
+                          // Price Section
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFF007F)
+                                    .withOpacity(0.1), // Light pink background
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 4.0,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0,
-                                    vertical: 4.0,
-                                  ),
-                                  child: Text(
-                                    item['price']!,
-                                    style: GoogleFonts.raleway(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFFF007F),
-                                    ),
+                                child: Text(
+                                  item['price']!,
+                                  style: GoogleFonts.raleway(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFFFF007F),
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

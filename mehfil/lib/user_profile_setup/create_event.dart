@@ -47,10 +47,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Event'),
-        backgroundColor: const Color(0xffF20587),
-      ),
+    backgroundColor: const Color(0xff26141C),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -110,8 +107,10 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
                     const SizedBox(height: 10),
                     // Map for selecting location
                     _venueLocation == null
-                        ? const Text(
-                            "Tap on the map to select a venue location")
+                        ? Text(
+                            "Tap on the map to select a venue location",
+                            style: GoogleFonts.raleway(color: Colors.white),
+                          )
                         : Container(),
                     SizedBox(
                       height: 250,
@@ -159,9 +158,11 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
                       },
                       icon: const Icon(Icons.fullscreen,
                           color: Color(0xffF20587)),
-                      label: const Text(
+                      label: Text(
                         'Open Full Screen Map',
-                        style: TextStyle(color: Color(0xffF20587)),
+                        style: GoogleFonts.raleway(
+                          color: const Color(0xffF20587),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -203,8 +204,22 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
+        style: GoogleFonts.raleway(color: Colors.white),
         decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder( 
+            borderRadius: BorderRadius.circular(14), 
+            borderSide: const BorderSide(
+              color: Colors.white38
+            )
+          ),
+          focusedBorder:OutlineInputBorder( 
+            borderRadius: BorderRadius.circular(14), 
+            borderSide: const BorderSide(
+              color: Color(0xffF20587)
+            )
+          ) ,
           labelText: label,
+          labelStyle: GoogleFonts.raleway(color: const Color(0xffF20587)),
           border: const OutlineInputBorder(),
         ),
         validator: (value) {
@@ -234,12 +249,16 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
         items: items.map((String category) {
           return DropdownMenuItem<String>(
             value: category,
-            child: Text(category),
+            child: Text(
+              category,
+              style: GoogleFonts.raleway(color: const Color(0xffF20587)),
+            ),
           );
         }).toList(),
         onChanged: onChanged,
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: GoogleFonts.raleway(color:const Color(0xffF20587)),
           border: const OutlineInputBorder(),
         ),
       ),
@@ -250,12 +269,34 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   Widget _buildImagePicker() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextButton.icon(
-        onPressed: _pickEventImage,
-        icon: const Icon(Icons.upload_file, color: Color(0xffF20587)),
-        label: const Text(
-          'Choose Image',
-          style: TextStyle(color: Color(0xffF20587)),
+      child: Center(
+        child: GestureDetector(
+          onTap: _pickEventImage,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            decoration: BoxDecoration(
+              color: const Color(0xffF20587),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: const Offset(0, 2),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.upload_file, color: Colors.white),
+                SizedBox(width: 8),
+                Text(
+                  'Choose Event Image',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -381,8 +422,8 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
     final DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: _startDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      firstDate: DateTime(2024),
+      lastDate: DateTime(2026),
     );
     if (selectedDate != null && selectedDate != _startDate) {
       setState(() {

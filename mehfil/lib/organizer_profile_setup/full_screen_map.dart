@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class FullScreenMapScreen extends StatefulWidget {
@@ -29,8 +30,16 @@ class _FullScreenMapScreenState extends State<FullScreenMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Location'),
-        backgroundColor: const Color(0xffF20587),
+        title:  Text('Select Location', 
+        style: GoogleFonts.raleway( 
+          color: Colors.white
+        ),),
+        leading: IconButton(
+        onPressed: () {
+          Navigator.of(context).pop(); 
+        },
+         icon: const Icon(Icons.keyboard_arrow_left_outlined, color: Colors.white, size: 40,)),
+       backgroundColor: const Color(0xff26141C),
       ),
       body: Stack(
         children: [

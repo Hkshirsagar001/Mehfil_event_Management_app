@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mehfil/event_detail.dart';
 
 class SearchResultsScreen extends StatefulWidget {
-  const SearchResultsScreen({super.key});
+  final User user;
+
+  const SearchResultsScreen({super.key, required this.user});
 
   @override
   State<SearchResultsScreen> createState() => _SearchResultsScreenState();
@@ -76,12 +79,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xff26141C),
         title: const Text('Search Events'),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16.0),
-            child: Icon(Icons.search, color: Colors.white),
-          ),
-        ],
       ),
       backgroundColor: const Color(0xff26141C),
       body: Column(
@@ -97,7 +94,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                 hintText: 'Search events...',
                 hintStyle: const TextStyle(color: Colors.white54),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
+                  borderRadius: BorderRadius.circular(20.0),
                   borderSide: BorderSide.none,
                 ),
                 prefixIcon: const Icon(Icons.search, color: Colors.white54),
@@ -118,54 +115,89 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       final event = filteredEvents[index];
                       return GestureDetector(
                         onTap: () {
-                          // Navigate to EventDetailsScreen with event data
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  EventDetailsScreen(event: event),
+                              builder: (context) => EventDetailsScreen(
+                                  event: event, user: widget.user),
                             ),
                           );
                         },
                         child: Card(
-                          color: const Color(0xff1F1A24),
-                          child: ListTile(
-                            leading: event['eventImage'] != null &&
-                                    event['eventImage'] != ''
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: ConstrainedBox(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 60,
-                                        maxHeight: 60,
-                                      ),
-                                      child: Image.file(
-                                        File(event['eventImage']!),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.image,
-                                    color: Colors.white54,
-                                    size: 40,
-                                  ),
-                            title: Text(
-                              event['eventName'] ?? 'No Event Name',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            subtitle: Text(
-                              event['venueName'] ?? 'No Venue',
-                              style: const TextStyle(color: Colors.white54),
-                            ),
-                            trailing: Text(
-                              event['ticketPrice'] != null
-                                  ? '\$${event['ticketPrice']}'
-                                  : 'Free',
-                              style: const TextStyle(color: Colors.pink),
-                            ),
-                          ),
-                        ),
+  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12.0),
+  ),
+  color: const Color(0xff1F1A24),
+  child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: event['eventImage'] != null && event['eventImage'] != ''
+              ? Image.file(
+                  File(event['eventImage']!),
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                )
+              : Container(
+                  width: 80,
+                  height: 80,
+                  color: Colors.grey[800],
+                  child: const Icon(
+                    Icons.image,
+                    color: Colors.white54,
+                    size: 40,
+                  ),
+                ),
+        ),
+        const SizedBox(width: 16.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                event['eventName'] ?? 'No Event Name',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                event['date'] ?? 'Date not available',
+                style: const TextStyle(
+                  color: Colors.white54,
+                  fontSize: 14.0,
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                event['time'] ?? 'Time not available',
+                style: const TextStyle(
+                  color: Colors.white54,
+                  fontSize: 14.0,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8.0),
+        const Icon(
+          Icons.favorite_border,
+          color: Colors.pink,
+          size: 24.0,
+        ),
+      ],
+    ),
+  ),
+),
+
                       );
                     },
                   ),

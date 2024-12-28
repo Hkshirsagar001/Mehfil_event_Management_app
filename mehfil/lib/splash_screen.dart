@@ -59,6 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center, // Center the logo
               children: [
+                const SizedBox(width: 30,), 
                 Image.asset(
                   "assets/batch-0---random-assets-2-high-resolution-logo-transparent.png",
                   width: screenWidth * 0.8, // 80% of screen width

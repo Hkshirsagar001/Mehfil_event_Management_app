@@ -5,13 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mehfil/services/stripe_service.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'user_profile_setup/MapScreen.dart';
 
 class EventDetailsScreen extends StatefulWidget {
-  final Map<String, dynamic> event; // Event data passed from previous screen
+  final Map<String, dynamic> event;
+  final User user;
 
-  const EventDetailsScreen({super.key, required this.event});
+  const EventDetailsScreen(
+      {super.key, required this.event, required this.user});
 
   @override
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();
@@ -34,12 +36,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xff26141C),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () {
-          
-        },
-      ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -259,95 +255,63 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               const SizedBox(height: 16),
 
               // Buy Ticket Button
-              GestureDetector(
-                onTap: () async {
-                  bool paymentSuccessful =
-                      await StripeService.instance.makePayment();
-                  if (paymentSuccessful) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: const Color(0xff26141C),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          title: const Text(
-                            "Payment Successful",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                          content: const Text(
-                            "Your payment has been processed successfully.",
-                            style:
-                                TextStyle(color: Colors.white54, fontSize: 14),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                // Navigate to the ticket screen
-                                Navigator.pop(context); // Close the dialog
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) =>
-                                //         TicketScreen(event: widget.event),
-                                //   ),
-                                // );
-                              },
-                              child: const Text(
-                                "View Ticket",
-                                style: TextStyle(color: Colors.pink),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Navigate to the Home screen
-                                Navigator.pop(context); // Close the dialog
-                                Navigator.popUntil(
-                                    context, (route) => route.isFirst);
-                              },
-                              child: const Text(
-                                "Go to Home",
-                                style: TextStyle(color: Colors.pink),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Payment failed. Please try again."),
-                      ),
-                    );
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xffF20587),
-                        Color(0xffF2059F),
-                        Color(0xffF207CB)
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Buy Ticket',
-                      style: GoogleFonts.raleway(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+   GestureDetector(
+  onTap: () async {
+    try {
+      final String userName = widget.user.displayName ?? "Harsh";
+
+      final String date = event['startDate'] != null
+          ? DateFormat('d MMMM yyyy').format(
+              event['startDate'] is DateTime
+                  ? event['startDate']
+                  : event['startDate'].toDate(),
+            )
+          : "No Date";
+      final String location = event['venueName'] ?? "Unknown Location";
+
+      // Pass ticketPrice to makePayment
+      final int ticketPrice = event['ticketPrice'] != null
+          ? int.tryParse(event['ticketPrice'].toString()) ?? 0
+          : 0;
+
+      await StripeService.instance.makePayment(
+        context,
+        userName: userName,
+        date: date,
+        location: location,
+        ticketPrice: ticketPrice, // Pass the ticket price here
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    }
+  },
+  child: Container(
+    width: double.infinity,
+    height: 50,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(14),
+      gradient: const LinearGradient(
+        colors: [
+          Color(0xffF20587),
+          Color(0xffF2059F),
+          Color(0xffF207CB),
+        ],
+      ),
+    ),
+    child: Center(
+      child: Text(
+        'Buy Ticket',
+        style: GoogleFonts.raleway(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ),
+  ),
+),
 
               const SizedBox(height: 16),
             ],

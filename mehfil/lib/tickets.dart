@@ -41,32 +41,35 @@ class _TicketsScreenState extends State<TicketsScreen>
         backgroundColor: const Color(0xff26141C),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(50),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            margin: const EdgeInsets.only(bottom: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xff38202A),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xffF20587),
-                    Color(0xffF2059F),
-                    Color(0xffF207CB)
-                  ],
-                ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xff38202A),
                 borderRadius: BorderRadius.circular(12),
               ),
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white54,
-              tabs: const [
-                Center(child: Tab(text: 'Upcoming')),
-                Tab(text: 'Completed'),
-                Tab(text: 'Cancelled'),
-              ],
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xffF20587),
+                      Color(0xffF2059F),
+                      Color(0xffF207CB)
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white54,
+                tabs: const [
+                  Center(child: Tab(text: 'Upcoming')),
+                  Center(child: Tab(text: 'Completed')),
+                  Center(child: Tab(text: 'Cancelled')),
+                ],
+              ),
             ),
           ),
         ),

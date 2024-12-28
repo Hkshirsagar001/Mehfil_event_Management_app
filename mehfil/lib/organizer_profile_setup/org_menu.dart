@@ -22,7 +22,7 @@ class _MyMenuState extends State<MyMenu> {
     _screens = [
       Dashboard(uid: widget.uid),
       const QRCodeScannerScreen(),
-      const ProfileScreen(),
+      OrgProfileScreen(user: widget.uid,),
     ];
   }
 
@@ -64,8 +64,10 @@ class _MyMenuState extends State<MyMenu> {
 }
 
 // Sample Profile Screen
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class OrgProfileScreen extends StatelessWidget {
+ final String user;
+
+  const OrgProfileScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {

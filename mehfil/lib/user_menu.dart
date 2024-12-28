@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mehfil/tickets.dart';
+import 'package:mehfil/user_profile_setup/user_profileScreen.dart';
 import 'home_screen.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _MenuScreenState extends State<MenuScreen> {
     _screens = [
       HomeScreen(user: widget.user),
       const TicketsScreen(),
-      const ProfileScreen(), // Placeholder for the profile screen
+       UserProfileScreen(uid: widget.user.uid), 
     ];
   }
 
@@ -66,20 +67,4 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
-// Sample Profile Screen
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xff26141C),
-      body: Center(
-        child: Text(
-          "Profile Screen",
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
-      ),
-    );
-  }
-}
