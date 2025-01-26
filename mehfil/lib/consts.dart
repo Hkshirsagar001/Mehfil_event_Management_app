@@ -1,2 +1,2 @@
-const String stripePublishableLey = "pk_test_51QXcOYBgun0TAWy0sg5j7pHuNFe9ZeasF5oiDcaqjiUbehHil9X2BGhdtJTp8V4eT4XKJsLGOAFY7UG3M2fte6Cc00LS00LtO0" ; 
-const String stripeSecretKey = "sk_test_51QXcOYBgun0TAWy0toLxKuymnWfOkXhKXwzOJhWkqZpVwsV2YlAZoVVwysyupa4DcWsN2FuRaUfVBEsfSC9EDTZz00nseGLAU8"; 
+const String stripePublishableLey = "" ; 
+const String stripeSecretKey = ""; 
