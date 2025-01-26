@@ -21,10 +21,10 @@ Future<void> _setup() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: 'AIzaSyATGkCXfjJGOQzq3D_XzCwex331bUSuHf8', 
-        appId: '148012898013', 
-        messagingSenderId: "1:148012898013:android:7d1d179316c33518646d34", 
-        projectId: "eventaura-3700e"
+        apiKey: '', 
+        appId: '', 
+        messagingSenderId: ":::", 
+        projectId: "-"
       ),
     );
     log("Firebase successfully initialized!");
